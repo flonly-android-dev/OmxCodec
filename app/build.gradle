@@ -1,0 +1,117 @@
+apply plugin: 'com.android.model.application'
+
+
+model {
+    android {
+        compileSdkVersion = 23
+        buildToolsVersion = "23.0.2"
+
+        defaultConfig.with {
+            applicationId = "com.example.flonly.omxcodec"
+            minSdkVersion.apiLevel = 16
+            targetSdkVersion.apiLevel = 23
+
+        }
+
+    }
+
+    compileOptions.with {
+        sourceCompatibility = JavaVersion.VERSION_1_7
+        targetCompatibility = JavaVersion.VERSION_1_7
+    }
+
+    android.ndk {
+        moduleName = "mediacore"
+        //ldLibs  "log", "z", "m"
+        //abiFilters  'armeabi', 'armeabi-v7a', 'x86'
+
+        cppFlags.add("-I${file("src/main/jni/include/21/frameworks/native")}".toString())
+        cppFlags.add("-I${file("src/main/jni/include/21/frameworks/av")}".toString())
+        cppFlags.add("-I${file("src/main/jni/include/21/frameworks/base")}".toString())
+        cppFlags.add("-I${file("src/main/jni/include/21/system/core")}".toString())
+        cppFlags.add("-I${file("src/main/jni/include/21/frameworks/native/media/openmax")}".toString())
+        cppFlags.add("-I${file("src/main/jni")}".toString())
+        cppFlags.add("-I${file("src/main/jni/include/21")}".toString())
+        //cppFlags.add("-I/Users/flonly/Library/Android/sdk/ndk-bundle/platforms/android-23/arch-arm/usr/include")
+        cppFlags.add("-fexceptions")
+        cppFlags.add("-fpermissive")
+        cppFlags.add("-D_ANDROID");
+        cppFlags.add("-D__STDC_CONSTANT_MACROS");
+        cppFlags.add("-DANDROID_NDK");
+        //cppFlags.add("-std=c++11");
+        //cppFlags.add("-frtti");
+        cppFlags.add("-Wno-multichar");
+
+
+        //CFlags.add("-I/Users/flonly/Library/Android/sdk/ndk-bundle/platforms/android-23/arch-arm/usr/include")
+
+        CFlags.add("-I${file("src/main/jni/include/21/frameworks/native")}".toString())
+        CFlags.add("-I${file("src/main/jni/include/21/frameworks/av")}".toString())
+        CFlags.add("-I${file("src/main/jni/include/21/frameworks/base")}".toString())
+        CFlags.add("-I${file("src/main/jni/include/21/system/core")}".toString())
+        CFlags.add("-I${file("src/main/jni")}".toString())
+        CFlags.add("-I${file("src/main/jni/include/21")}".toString())
+        //CFlags.add("-I${file("src/main/jni/include/omx")}".toString())
+        CFlags.add("-I${file("src/main/jni/include/21/frameworks/native/media/openmax")}".toString())
+        CFlags.add("-D_ANDROID");
+        CFlags.add("-D__STDC_CONSTANT_MACROS");
+        CFlags.add("-DANDROID_NDK");
+        //CFlags.add("-std=c++11");
+        //CFlags.add("-frtti");
+        CFlags.add("-Wno-multichar");
+
+        ldFlags.add("-L${file("src/main/jni/libs/21")}".toString())
+        ldLibs.addAll(["android", "log","atomic"])
+        //ldLibs.addAll(["OmxCore","binder","media","media","utils","stagefright","stagefright_foundation"])
+        ldLibs.addAll(["binder","media","utils","stagefright"])
+//        ldLibs += "OmxCore"
+//        ldLibs += "binder"
+//        ldLibs += "media"
+//        ldLibs += "utils"
+//        ldLibs += "stagefright_foundation"
+
+        stl = "stlport_static"
+        //stl = "c++_static"
+        //stl = "gnustl_shared"
+
+        //toolchain = "gcc"
+        //toolchainVersion = "3.8"
+    }
+
+    android.sources{
+        main {
+            jni{
+                source {
+                    srcDirs 'src/main/jni'
+                    exclude "**/CCodecTester.*"
+                    exclude "**/CMediaCodec.*"
+                    exclude "**/H264Encoder.*"
+                }
+            }
+        }
+    }
+    android.buildTypes {
+        release {
+            minifyEnabled = false
+            //proguardFiles = getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles.add(file('proguard-rules.txt'))
+        }
+    }
+
+    android.productFlavors {
+//        arm {
+//            ndk {
+//                abiFilter = "armeabi-v7a"
+//            }
+//        }
+        create("arm") {
+            ndk.abiFilters.add("armeabi")
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+}
